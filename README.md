@@ -39,20 +39,20 @@ Here are some visuals showcasing the app's features:
 
 1. **Light Theme Main Screen**  
 <p align="center">
-  <img src="images/unsolved_light.jpg" height="500" width="250" alt="Error">
-  <img src="images/solved_light.jpg" height="500" width="250" alt="Error">
+  <img src="Images/unsolved_light.jpg" height="500" width="250" alt="Error">
+  <img src="Images/solved_light.jpg" height="500" width="250" alt="Error">
 </p>
 
 2. **Dark Theme Main Screen**  
 <p align="center">
-  <img src="images/unsolved_dark.jpg" height="500" width="250" alt="Error">
-  <img src="images/solved_dark.jpg" height="500" width="250" alt="Error">
+  <img src="Images/unsolved_dark.jpg" height="500" width="250" alt="Error">
+  <img src="Images/solved_dark.jpg" height="500" width="250" alt="Error">
 </p>
 
 3. **Other**  
 <p align="center">
-  <img src="images/gallery.jpg" height="500" width="250" alt="Error">
-  <img src="images/camera.jpg" height="500" width="250" alt="Error">
+  <img src="Images/gallery.jpg" height="500" width="250" alt="Error">
+  <img src="Images/camera.jpg" height="500" width="250" alt="Error">
 </p>
 
 ---

@@ -24,14 +24,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.sudokuclassicwithcamera.ml.Model;
-
-import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.image.TensorImage;
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
+import com.example.sudokuclassicwithcamera.utils.GridAndButtonUtils;
+import com.example.sudokuclassicwithcamera.utils.SudokuSolverUtils;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class ManualSudokuActivity extends AppCompatActivity {
 
@@ -60,9 +56,6 @@ public class ManualSudokuActivity extends AppCompatActivity {
             return insets;
         });
 
-        GridAndButtonUtils gridAndButtonUtils = new GridAndButtonUtils();
-        SudokuSolverUtils sudokuSolverUtils = new SudokuSolverUtils();
-
         btsub = findViewById(R.id.buttons);
         btr = findViewById(R.id.buttonr);
         imgbtcam = findViewById(R.id.imageButton);
@@ -76,7 +69,7 @@ public class ManualSudokuActivity extends AppCompatActivity {
                 Button button = findViewById(resID);
                 if (button != null) {
                     button.setOnClickListener(v -> {
-                        gridAndButtonUtils.handleSudokuDigits(button,this,"ques");
+                        GridAndButtonUtils.handleSudokuDigits(button,this,"ques");
                     });
                 }
             }
@@ -90,10 +83,10 @@ public class ManualSudokuActivity extends AppCompatActivity {
                 Button button = findViewById(resID);
                 if (button != null) {
                     button.setOnClickListener(v -> {
-                        if(gridAndButtonUtils.lastClickedButton==null){
+                        if(GridAndButtonUtils.lastClickedButton==null){
                             Toast.makeText(this, "Please select a digit", Toast.LENGTH_SHORT).show();
                         }else{
-                            gridAndButtonUtils.handleInputsButton(button,this);
+                            GridAndButtonUtils.handleInputsButton(button,this);
                         }
                     });
                 }
@@ -102,23 +95,19 @@ public class ManualSudokuActivity extends AppCompatActivity {
 
         // Reset
         btr.setOnClickListener(v -> {
-            gridAndButtonUtils.resetGrid(usergrid,this);
+            GridAndButtonUtils.resetGrid(usergrid,this);
         });
 
         //Main Logic for submit button
         btsub.setOnClickListener(v -> {
-            gridAndButtonUtils.getGridInput(usergrid,this);
+            GridAndButtonUtils.getGridInput(usergrid,this);
 
 //            For Debugging
-//            for(int row=0;row<9;row++){
-//                for(int col=0;col<9;col++){
-//                    System.out.println(row+" "+col+" "+grid[row][col]);
-//                }
-//            }
+//            GridAndButtonUtils.printGrid(usergrid);
 
-            if(sudokuSolverUtils.validateInput(usergrid,this)){
-                if (sudokuSolverUtils.solveSudoku(usergrid, 0, 0)) {
-                    gridAndButtonUtils.setGridOutput(usergrid,this,"enable");
+            if(SudokuSolverUtils.validateInput(usergrid,this)){
+                if (SudokuSolverUtils.solveSudoku(usergrid, 0, 0)) {
+                    GridAndButtonUtils.setGridOutput(usergrid,this,"enable");
                 }
                 else {
                     Toast.makeText(this, "No Solution exists", Toast.LENGTH_SHORT).show();
@@ -126,12 +115,7 @@ public class ManualSudokuActivity extends AppCompatActivity {
             }
 
 //            For Debugging
-//            System.out.println("Output");
-//            for(int row=0;row<9;row++){
-//                for(int col=0;col<9;col++){
-//                    System.out.println(row+" "+col+" "+grid[row][col]);
-//                }
-//            }
+//            GridAndButtonUtils.printGrid(usergrid);
 
         });
 
@@ -210,6 +194,7 @@ public class ManualSudokuActivity extends AppCompatActivity {
                         Toast.makeText(ManualSudokuActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
                     }
                     else{
+
                         mlModel();
                     }
                 }
@@ -236,75 +221,77 @@ public class ManualSudokuActivity extends AppCompatActivity {
 
 
 //                Default template
-//                try {
-//                    Model model = Model.newInstance(context);
+//        try {
+//            Digits model = Digits.newInstance(context);
 //
-//                    // Creates inputs for reference.
-//                    TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 32, 32, 3}, DataType.FLOAT32);
-//                    inputFeature0.loadBuffer(byteBuffer);
+//            // Creates inputs for reference.
+//            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 32, 32, 1}, DataType.FLOAT32);
+//            inputFeature0.loadBuffer(byteBuffer);
 //
-//                    // Runs model inference and gets result.
-//                    Model.Outputs outputs = model.process(inputFeature0);
-//                    TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+//            // Runs model inference and gets result.
+//            Digits.Outputs outputs = model.process(inputFeature0);
+//            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 //
-//                    // Releases model resources if no longer used.
-//                    model.close();
-//                } catch (IOException e) {
-//                    // TODO Handle the exception
-//                }
+//            // Releases model resources if no longer used.
+//            model.close();
+//        } catch (IOException e) {
+//            // TODO Handle the exception
+//        }
 
-        if (img==null){
-            Toast.makeText(ManualSudokuActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        img = Bitmap.createScaledBitmap(img, 32, 32, true);
 
-        try {
+//        if (img==null){
+//            Toast.makeText(ManualSudokuActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        img = Bitmap.createScaledBitmap(img, 32, 32, true);
+//
+//        try {
+//
+//            Digits model = Digits.newInstance(getApplicationContext());
+//
+//            // Creates inputs for reference.
+//            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 32, 32, 1}, DataType.FLOAT32);
+//
+//            TensorImage tensorImage = new TensorImage(DataType.FLOAT32);
+//            tensorImage.load(img);
+//            ByteBuffer byteBuffer = tensorImage.getBuffer();
+//
+//            inputFeature0.loadBuffer(byteBuffer);
+//
+//            // Runs model inference and gets result.
+//            Digits.Outputs outputs = model.process(inputFeature0);
+//            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+//
+//            // Releases model resources if no longer used.
+//            model.close();
+//
+//            //For Debugging
+//            int count=0;
+//            for(int i=0;i<2;i++){
+//                System.out.println(i+" "+outputFeature0.getFloatArray()[i]);
+//                count++;
+//            }
+//            System.out.println(count);
+//
+////            //For Debugging (While using TextView)
+////            tv.setText("Data:\n"
+////                    +outputFeature0.getFloatArray()[0]
+////                    + "\n"+outputFeature0.getFloatArray()[1]
+////                    + "\n"+outputFeature0.getFloatArray()[2]
+////                    + "\n"+outputFeature0.getFloatArray()[3]
+////                    + "\n"+outputFeature0.getFloatArray()[4]
+////                    + "\n"+outputFeature0.getFloatArray()[5]
+////                    + "\n"+outputFeature0.getFloatArray()[6]
+////                    + "\n"+outputFeature0.getFloatArray()[7]
+////                    + "\n"+outputFeature0.getFloatArray()[8]
+////                    + "\n"+outputFeature0.getFloatArray()[9]
+////                    + "\n"+outputFeature0.getFloatArray()[10]
+////                    + "\n"+outputFeature0.getFloatArray()[11]
+////                    + "\n"+outputFeature0.getFloatArray()[12]);
+//
+//        } catch (IOException e) {
+//            // TODO Handle the exception
+//        }
 
-            Model model = Model.newInstance(getApplicationContext());
-
-            // Creates inputs for reference.
-            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 32, 32, 3}, DataType.FLOAT32);
-
-            TensorImage tensorImage = new TensorImage(DataType.FLOAT32);
-            tensorImage.load(img);
-            ByteBuffer byteBuffer = tensorImage.getBuffer();
-
-            inputFeature0.loadBuffer(byteBuffer);
-
-            // Runs model inference and gets result.
-            Model.Outputs outputs = model.process(inputFeature0);
-            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
-
-            // Releases model resources if no longer used.
-            model.close();
-
-            //For Debugging
-            int count=0;
-            for(int i=0;i<80;i++){
-                System.out.println(i+" "+outputFeature0.getFloatArray()[i]);
-                count++;
-            }
-            System.out.println(count);
-
-//            //For Debugging (While using TextView)
-//            tv.setText("Data:\n"
-//                    +outputFeature0.getFloatArray()[0]
-//                    + "\n"+outputFeature0.getFloatArray()[1]
-//                    + "\n"+outputFeature0.getFloatArray()[2]
-//                    + "\n"+outputFeature0.getFloatArray()[3]
-//                    + "\n"+outputFeature0.getFloatArray()[4]
-//                    + "\n"+outputFeature0.getFloatArray()[5]
-//                    + "\n"+outputFeature0.getFloatArray()[6]
-//                    + "\n"+outputFeature0.getFloatArray()[7]
-//                    + "\n"+outputFeature0.getFloatArray()[8]
-//                    + "\n"+outputFeature0.getFloatArray()[9]
-//                    + "\n"+outputFeature0.getFloatArray()[10]
-//                    + "\n"+outputFeature0.getFloatArray()[11]
-//                    + "\n"+outputFeature0.getFloatArray()[12]);
-
-        } catch (IOException e) {
-            // TODO Handle the exception
-        }
     }
 }

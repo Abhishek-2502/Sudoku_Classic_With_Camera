@@ -1,7 +1,6 @@
 package com.example.sudokuclassicwithcamera;
 
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
@@ -10,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.example.sudokuclassicwithcamera.utils.GridAndButtonUtils;
+import com.example.sudokuclassicwithcamera.utils.SudokuSolverUtils;
 
 
 public class RandomSudokuActivity extends AppCompatActivity {
@@ -23,6 +25,7 @@ public class RandomSudokuActivity extends AppCompatActivity {
         // Declaring Variables
         Button btsub;
         Button btr;
+        Button btsolve;
 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -36,9 +39,7 @@ public class RandomSudokuActivity extends AppCompatActivity {
 
         btsub = findViewById(R.id.buttons);
         btr = findViewById(R.id.buttonr);
-
-        GridAndButtonUtils gridAndButtonUtils = new GridAndButtonUtils();
-        SudokuSolverUtils sudokuSolverUtils = new SudokuSolverUtils();
+        btsolve = findViewById(R.id.buttonsolve);
 
         /*
         //For Debugging
@@ -85,16 +86,16 @@ public class RandomSudokuActivity extends AppCompatActivity {
         }
 
         if(value.equals("easy")){
-            gengrid=sudokuSolverUtils.generateRandomSudoku("easy");
-            gridAndButtonUtils.setGridOutput(gengrid,this,"disable");
+            gengrid=SudokuSolverUtils.generateRandomSudoku("easy");
+            GridAndButtonUtils.setGridOutput(gengrid,this,"disable");
         }
         else if(value.equals("medium")){
-            gengrid=sudokuSolverUtils.generateRandomSudoku("medium");
-            gridAndButtonUtils.setGridOutput(gengrid,this,"disable");
+            gengrid=SudokuSolverUtils.generateRandomSudoku("medium");
+            GridAndButtonUtils.setGridOutput(gengrid,this,"disable");
         }
         else if(value.equals("hard")){
-            gengrid=sudokuSolverUtils.generateRandomSudoku("hard");
-            gridAndButtonUtils.setGridOutput(gengrid,this,"disable");
+            gengrid=SudokuSolverUtils.generateRandomSudoku("hard");
+            GridAndButtonUtils.setGridOutput(gengrid,this,"disable");
         }
         else{
             Toast.makeText(this, "Key Error", Toast.LENGTH_SHORT).show();
@@ -109,7 +110,7 @@ public class RandomSudokuActivity extends AppCompatActivity {
                 Button button = findViewById(resID);
                 if (button != null) {
                     button.setOnClickListener(v -> {
-                        gridAndButtonUtils.handleSudokuDigits(button,this,"ans");
+                        GridAndButtonUtils.handleSudokuDigits(button,this,"ans");
                     });
                 }
             }
@@ -123,10 +124,10 @@ public class RandomSudokuActivity extends AppCompatActivity {
                 Button button = findViewById(resID);
                 if (button != null) {
                     button.setOnClickListener(v -> {
-                        if(gridAndButtonUtils.lastClickedButton==null){
+                        if(GridAndButtonUtils.lastClickedButton==null){
                             Toast.makeText(this, "Please select a digit", Toast.LENGTH_SHORT).show();
                         }else{
-                            gridAndButtonUtils.handleInputsButton(button,this);
+                            GridAndButtonUtils.handleInputsButton(button,this);
                         }
                     });
                 }
@@ -135,20 +136,41 @@ public class RandomSudokuActivity extends AppCompatActivity {
 
         // Reset
         btr.setOnClickListener(v -> {
-            gridAndButtonUtils.setGridOutput(gengrid,this,"disable");
+            GridAndButtonUtils.setGridOutput(gengrid,this,"disable");
         });
 
 
         btsub.setOnClickListener(v -> {
-            gridAndButtonUtils.getGridInput(usergrid, this);
-            if (gridAndButtonUtils.noZeroGrid(usergrid)) {
-                if (sudokuSolverUtils.validateInput(usergrid, this)) {
+            GridAndButtonUtils.getGridInput(usergrid, this);
+            if (GridAndButtonUtils.noZeroGrid(usergrid)) {
+                if (SudokuSolverUtils.validateInput(usergrid, this)) {
                     Toast.makeText(this, "You Won", Toast.LENGTH_SHORT).show();
                 }
             }
             else {
                 Toast.makeText(this, "Contain Empty Space", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        //Main Logic for solve button
+        btsolve.setOnClickListener(v -> {
+            GridAndButtonUtils.getGridInput(usergrid,this);
+
+//            For Debugging
+//            GridAndButtonUtils.printGrid(usergrid);
+
+            if(SudokuSolverUtils.validateInput(usergrid,this)){
+                if (SudokuSolverUtils.solveSudoku(usergrid, 0, 0)) {
+                    GridAndButtonUtils.setGridOutput(usergrid,this,"enable");
+                }
+                else {
+                    Toast.makeText(this, "No Solution exists", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+//            For Debugging
+//            GridAndButtonUtils.printGrid(usergrid);
+
         });
 
     }

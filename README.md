@@ -76,9 +76,12 @@ Follow these steps to install and run the Sudoku Solver App:
 
 2. Open the project in **Android Studio**.
 
-3. Add your Gemini API key to the .env file or inside local.properties:
+3. Create a file local.properties (Sudoku_Classic_With_Camera/Sudoku Classic with Camera) and add following:
    ```bash
-   GEMINI_API_KEY=your_api_key_here
+   sdk.dir=C\:\\Users\\your_username\\AppData\\Local\\Android\\Sdk
+   GEMINI_KEY=your_api_key
+   GEMINI_MODEL=gemini-2.5-flash-lite-preview-06-17
+   GEMINI_URL=https://generativelanguage.googleapis.com/v1beta/models/
    ```
 
 4. Connect your Android device or use an emulator.

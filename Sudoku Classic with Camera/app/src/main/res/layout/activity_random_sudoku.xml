@@ -1907,12 +1907,26 @@
 
                 <Button
                     android:id="@+id/buttons"
-                    android:layout_width="125dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
                     android:backgroundTint="?android:attr/colorBackground"
                     android:paddingLeft="0dp"
                     android:paddingRight="0dp"
                     android:text="Submit"
+                    android:textColor="?android:attr/colorForeground"
+                    app:strokeColor="?android:attr/colorForeground"
+                    app:strokeWidth="1dp" />
+
+                <Button
+                    android:id="@+id/buttonsolve"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:backgroundTint="?android:attr/colorBackground"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:text="Solve"
                     android:textColor="?android:attr/colorForeground"
                     app:strokeColor="?android:attr/colorForeground"
                     app:strokeWidth="1dp" />

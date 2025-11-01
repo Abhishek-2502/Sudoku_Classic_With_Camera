@@ -13,10 +13,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class LevelSelectActivity extends AppCompatActivity {
 
-    Button bte;
-    Button btm;
-    Button bth;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,40 +23,34 @@ public class LevelSelectActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         // Check the current UI mode (dark or light)
         int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         switch (nightModeFlags) {
             case Configuration.UI_MODE_NIGHT_YES:
-                // Dark mode is active, set dark background
                 findViewById(R.id.main).setBackgroundResource(R.drawable.dark_bg);
                 break;
-
             case Configuration.UI_MODE_NIGHT_NO:
             case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                // Light mode is active or undefined, set light background
                 findViewById(R.id.main).setBackgroundResource(R.drawable.light_bg);
                 break;
         }
 
-        bte = findViewById(R.id.buttoneasy);
-        btm = findViewById(R.id.buttonmed);
-        bth = findViewById(R.id.buttonhard);
+        // Buttons
+        Button bte = findViewById(R.id.buttoneasy);
+        Button btm = findViewById(R.id.buttonmed);
+        Button bth = findViewById(R.id.buttonhard);
 
-        bte.setOnClickListener(v -> {
-            Intent intent = new Intent(LevelSelectActivity.this, RandomSudokuActivity.class);
-            intent.putExtra("difficulty", "easy");
-            startActivity(intent);
-        });
-        btm.setOnClickListener(v -> {
-            Intent intent = new Intent(LevelSelectActivity.this, RandomSudokuActivity.class);
-            intent.putExtra("difficulty", "medium");
-            startActivity(intent);
-        });
-        bth.setOnClickListener(v -> {
-            Intent intent = new Intent(LevelSelectActivity.this, RandomSudokuActivity.class);
-            intent.putExtra("difficulty", "hard");
-            startActivity(intent);
-        });
+        setupButton(bte, "easy");
+        setupButton(btm, "medium");
+        setupButton(bth, "hard");
+    }
 
+    private void setupButton(Button button, String difficulty) {
+        button.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RandomSudokuActivity.class);
+            intent.putExtra("difficulty", difficulty);
+            startActivity(intent);
+        });
     }
 }

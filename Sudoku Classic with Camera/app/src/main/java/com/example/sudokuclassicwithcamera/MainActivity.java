@@ -13,9 +13,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btplay;
-    Button btplay2;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,28 +28,23 @@ public class MainActivity extends AppCompatActivity {
         int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         switch (nightModeFlags) {
             case Configuration.UI_MODE_NIGHT_YES:
-                // Dark mode is active, set dark background
                 findViewById(R.id.main).setBackgroundResource(R.drawable.dark_bg);
                 break;
-
             case Configuration.UI_MODE_NIGHT_NO:
             case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                // Light mode is active or undefined, set light background
                 findViewById(R.id.main).setBackgroundResource(R.drawable.light_bg);
                 break;
         }
 
-        btplay = findViewById(R.id.buttonplay);
-        btplay2 = findViewById(R.id.buttonplay2);
+        // Buttons
+        Button btplay = findViewById(R.id.buttonplay);
+        Button btplay2 = findViewById(R.id.buttonplay2);
 
-        btplay.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, LevelSelectActivity.class);
-            startActivity(intent);
-        });
+        setupButton(btplay, LevelSelectActivity.class);
+        setupButton(btplay2, ManualSudokuActivity.class);
+    }
 
-        btplay2.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ManualSudokuActivity.class);
-            startActivity(intent);
-        });
+    private void setupButton(Button button, Class<?> activityClass) {
+        button.setOnClickListener(v -> startActivity(new Intent(this, activityClass)));
     }
 }

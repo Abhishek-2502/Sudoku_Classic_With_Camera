@@ -38,6 +38,16 @@ public class RandomSudokuActivity extends AppCompatActivity {
         setupGridButtons();
         setupInputButtons();
         setupControlButtons();
+
+        // Validate button mapping
+        GridAndButtonUtils.testCoordinateCalculation();
+        boolean allValid = GridAndButtonUtils.validateAllButtons(this);
+        GridAndButtonUtils.debugFullButtonMapping(this);
+
+        if (!allValid) {
+            Log.e(TAG, "WARNING: Not all buttons are properly mapped!");
+            Toast.makeText(this, "Button mapping issue detected", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -178,9 +188,6 @@ public class RandomSudokuActivity extends AppCompatActivity {
     private void solveCurrentPuzzle() {
         try {
             Log.d(TAG, "=== SOLVER DEBUG START ===");
-
-            // DEBUG: Check the button mapping
-            GridAndButtonUtils.debugFullButtonMapping(this);
 
             int[][] tempGrid = GridAndButtonUtils.copyGrid(userGrid);
 

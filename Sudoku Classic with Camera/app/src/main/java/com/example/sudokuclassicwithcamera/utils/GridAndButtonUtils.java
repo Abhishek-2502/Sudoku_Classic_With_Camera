@@ -13,7 +13,7 @@ public class GridAndButtonUtils {
     private static TypedValue typedValue = new TypedValue();
     private static TypedValue typedValue1 = new TypedValue();
 
-    // Handle the sudoku digits
+    // --Handle the sudoku digits
     public static Button handleSudokuDigits(Button clickedButton, Context context, String tag, Button lastClickedButton) {
         try {
             // Reset the last clicked button if it's not null and is not the current button
@@ -38,7 +38,7 @@ public class GridAndButtonUtils {
         }
     }
 
-    // Handle the inputs for the buttons
+    //-- Handle the inputs for the buttons
     public static void handleInputsButton(Button clickedButton, Context context, Button lastClickedButton, int[][] userGrid) {
         if (lastClickedButton == null) return;
 
@@ -69,7 +69,7 @@ public class GridAndButtonUtils {
         }
     }
 
-    // Get input value from button ID
+    // --Get input value from button ID
     private static String getInputFromButton(Button button) {
         int id = button.getId();
 
@@ -95,7 +95,7 @@ public class GridAndButtonUtils {
         return null;
     }
 
-    // Validate input
+    // --Validate input
     public static boolean isValidInput(String input) {
         if (input.equals(" ") || input.isEmpty()) {
             return true; // Clear cell
@@ -108,14 +108,18 @@ public class GridAndButtonUtils {
         }
     }
 
-    // Get grid coordinates from button using explicit mapping
+    // --Get grid coordinates from button using explicit mapping
     public static int[] getGridCoordinatesFromButton(Button button) {
+        if (button == null) return null;
+
         int[] coords = new int[2];
         String resourceName = "";
 
         try {
             resourceName = button.getResources().getResourceName(button.getId());
+            Log.d(TAG, "Processing: " + resourceName);
         } catch (Exception e) {
+            Log.e(TAG, "Error getting resource name", e);
             return null;
         }
 
@@ -126,34 +130,47 @@ public class GridAndButtonUtils {
 
             Log.d(TAG, "Processing button" + buttonNum);
 
-            // Map button number to grid coordinates (1-89 to 0-8,0-8)
-            // Buttons 10, 20, 30, 40, 50, 60, 70, 80 are skipped in the layout!
-            // So we need a custom mapping
-
-            // The layout skips every 10th button (10,20,30,40,50,60,70,80,90)
-            // Let's create a mapping table
-            int[][] buttonToGridMap = createButtonToGridMapping();
-
-            // Find the button in our mapping
-            for (int row = 0; row < 9; row++) {
-                for (int col = 0; col < 9; col++) {
-                    if (buttonToGridMap[row][col] == buttonNum) {
-                        coords[0] = row;
-                        coords[1] = col;
-                        Log.d(TAG, String.format("Button%d -> Grid[%d][%d]", buttonNum, row, col));
-                        return coords;
-                    }
-                }
+            // Validate button number range
+            if (buttonNum < 1 || buttonNum > 89) {
+                Log.w(TAG, "Button number " + buttonNum + " out of range");
+                return null;
             }
 
-            Log.d(TAG, "Button" + buttonNum + " not found in mapping");
-            return null;
+            // Skip invalid button numbers (10, 20, 30, etc.)
+            if (buttonNum % 10 == 0) {
+                Log.w(TAG, "Button number " + buttonNum + " is skipped in layout");
+                return null;
+            }
+
+            // Calculate mapping directly (more efficient)
+            // Since we skip every 10th button, we need to adjust the calculation
+            int skippedButtons = buttonNum / 10; // Number of 10th buttons we've passed
+            int actualPosition = buttonNum - skippedButtons;
+
+            // Convert to grid coordinates (0-8, 0-8)
+            int row = (actualPosition - 1) / 9;
+            int col = (actualPosition - 1) % 9;
+
+            // Validate coordinates
+            if (row >= 0 && row < 9 && col >= 0 && col < 9) {
+                coords[0] = row;
+                coords[1] = col;
+                Log.d(TAG, String.format("Button%d -> Grid[%d][%d]", buttonNum, row, col));
+                return coords;
+            } else {
+                Log.w(TAG, "Calculated invalid coordinates: row=" + row + ", col=" + col);
+                return null;
+            }
         } catch (NumberFormatException e) {
-            return null; // Not a grid button
+            Log.e(TAG, "Invalid button number format", e);
+            return null;
+        } catch (Exception e) {
+            Log.e(TAG, "Unexpected error in coordinate calculation", e);
+            return null;
         }
     }
 
-    // Create mapping for our specific layout (buttons 1-89 with gaps)
+    // --Create mapping for our specific layout (buttons 1-89 with gaps)
     private static int[][] createButtonToGridMapping() {
         int[][] mapping = new int[9][9];
         int buttonIndex = 1;
@@ -163,16 +180,22 @@ public class GridAndButtonUtils {
                 mapping[row][col] = buttonIndex;
                 buttonIndex++;
 
-                // Skip every 10th button (your layout has gaps)
+                // Skip every 10th button (your layout has gaps at 10,20,30,...,90)
                 if (buttonIndex % 10 == 0) {
                     buttonIndex++;
+                }
+
+                // Safety check - don't exceed 89
+                if (buttonIndex > 89) {
+                    Log.w(TAG, "Button index exceeded 89 at row=" + row + ", col=" + col);
+                    return mapping;
                 }
             }
         }
         return mapping;
     }
 
-    // Reset button to default appearance
+    // --Reset button to default appearance
     private static void resetButtonAppearance(Button button, Context context) {
         button.setTextSize(20);
         context.getTheme().resolveAttribute(android.R.attr.colorForeground, typedValue, true);
@@ -184,10 +207,13 @@ public class GridAndButtonUtils {
         button.setBackgroundColor(colorBackground);
     }
 
-    // Reset the grid
+    // --Reset the grid
     public static void resetGrid(int grid[][], Context context, Button lastClickedButton) {
         try {
             for (int i = 1; i <= 89; i++) {
+                // Skip every 10th button
+                if (i % 10 == 0) continue;
+
                 int resID = context.getResources().getIdentifier("button" + i, "id", context.getPackageName());
                 if (resID != 0) {
                     Button button = ((Activity)context).findViewById(resID);
@@ -216,7 +242,7 @@ public class GridAndButtonUtils {
         }
     }
 
-    // Print the grid
+    // --Print the grid
     public static void printGrid(int grid[][]) {
         if (grid == null) {
             Log.d(TAG, "Grid is null");
@@ -233,12 +259,14 @@ public class GridAndButtonUtils {
         Log.d(TAG, sb.toString());
     }
 
-    // Get the grid input from UI
+    // --Get the grid input from UI
     public static void getGridInput(int grid[][], Context context) {
         if (grid == null) return;
 
         try {
             for (int i = 1; i <= 89; i++) {
+                if (i % 10 == 0) continue; // Skip every 10th button
+
                 int resID = context.getResources().getIdentifier("button" + i, "id", context.getPackageName());
                 if (resID != 0) {
                     Button button = ((Activity)context).findViewById(resID);
@@ -264,12 +292,14 @@ public class GridAndButtonUtils {
         }
     }
 
-    // Set the grid output to UI
+    // --Set the grid output to UI
     public static void setGridOutput(int grid[][], Context context, String tag) {
         if (grid == null) return;
 
         try {
             for (int i = 1; i <= 89; i++) {
+                if (i % 10 == 0) continue; // Skip every 10th button
+
                 int resID = context.getResources().getIdentifier("button" + i, "id", context.getPackageName());
                 if (resID != 0) {
                     Button button = ((Activity)context).findViewById(resID);
@@ -302,7 +332,7 @@ public class GridAndButtonUtils {
         }
     }
 
-    // Check if the grid contains any zero
+    // --Check if the grid contains any zero
     public static boolean noZeroInGrid(int grid[][]) {
         if (grid == null) return false;
 
@@ -316,7 +346,7 @@ public class GridAndButtonUtils {
         return true;
     }
 
-    // Compare two grids
+    // --Compare two grids
     public static boolean compareGrid(int grid1[][], int grid2[][]) {
         if (grid1 == null || grid2 == null) return false;
 
@@ -330,7 +360,7 @@ public class GridAndButtonUtils {
         return true;
     }
 
-    // Copy grid
+    // --Copy grid
     public static int[][] copyGrid(int[][] source) {
         if (source == null) return null;
         int[][] copy = new int[9][9];
@@ -340,7 +370,7 @@ public class GridAndButtonUtils {
         return copy;
     }
 
-    // Flatten grid for saving state
+    // --Flatten grid for saving state
     public static int[] flattenGrid(int[][] grid) {
         if (grid == null) return new int[81];
         int[] flat = new int[81];
@@ -352,7 +382,7 @@ public class GridAndButtonUtils {
         return flat;
     }
 
-    // Unflatten grid for restoring state
+    // --Unflatten grid for restoring state
     public static int[][] unflattenGrid(int[] flat) {
         if (flat == null || flat.length != 81) return new int[9][9];
         int[][] grid = new int[9][9];
@@ -364,33 +394,135 @@ public class GridAndButtonUtils {
         return grid;
     }
 
-    // For Debugging
+    // --For Debugging: Check if all buttons are mapped correctly
+    public static boolean validateAllButtons(Context context) {
+        int validButtons = 0;
+        int totalButtons = 0;
+
+        for (int i = 1; i <= 89; i++) {
+            if (i % 10 == 0) continue;
+            totalButtons++;
+
+            int resID = context.getResources().getIdentifier("button" + i, "id", context.getPackageName());
+            if (resID != 0) {
+                Button button = ((Activity)context).findViewById(resID);
+                if (button != null) {
+                    int[] coords = getGridCoordinatesFromButton(button);
+                    if (coords != null) {
+                        validButtons++;
+                    }
+                }
+            }
+        }
+
+        Log.d(TAG, "Button validation: " + validButtons + "/" + totalButtons + " buttons mapped correctly");
+        return validButtons == 81; // Should have exactly 81 valid buttons for 9x9 grid
+    }
+
+    // --For Debugging: Test method to verify the coordinate calculation for key buttons
+    public static void testCoordinateCalculation() {
+        Log.d(TAG, "=== COORDINATE CALCULATION VERIFICATION ===");
+
+        // Test key button numbers to verify the mapping
+        int[][] testCases = {
+                {1, 0, 0},   // Button1 -> Grid[0][0]
+                {9, 0, 8},   // Button9 -> Grid[0][8]
+                {11, 1, 0},  // Button11 -> Grid[1][0] (skipped button10)
+                {19, 1, 8},  // Button19 -> Grid[1][8]
+                {21, 2, 0},  // Button21 -> Grid[2][0] (skipped button20)
+                {29, 2, 8},  // Button29 -> Grid[2][8]
+                {31, 3, 0},  // Button31 -> Grid[3][0] (skipped button30)
+                {81, 8, 0},  // Button81 -> Grid[8][0]
+                {89, 8, 8}   // Button89 -> Grid[8][8]
+        };
+
+        for (int[] testCase : testCases) {
+            int buttonNum = testCase[0];
+            int expectedRow = testCase[1];
+            int expectedCol = testCase[2];
+
+            int skippedButtons = buttonNum / 10;
+            int actualPosition = buttonNum - skippedButtons;
+            int row = (actualPosition - 1) / 9;
+            int col = (actualPosition - 1) % 9;
+
+            boolean correct = (row == expectedRow && col == expectedCol);
+            Log.d(TAG, String.format("Button%d -> Grid[%d][%d] %s (skipped:%d, actualPos:%d)",
+                    buttonNum, row, col, correct ? "✓" : "✗", skippedButtons, actualPosition));
+        }
+    }
+
+    // For Debugging: Enhanced debug method with grid visualization
     public static void debugFullButtonMapping(Context context) {
-        Log.d(TAG, "=== FULL BUTTON MAPPING DEBUG ===");
+        Log.d(TAG, "=== COMPREHENSIVE BUTTON MAPPING DEBUG ===");
 
-        int[][] mapping = createButtonToGridMapping();
+        int validMappings = 0;
+        int[][] buttonGrid = new int[9][9]; // Store button numbers for each grid position
+        String[][] textGrid = new String[9][9]; // Store button text for each grid position
 
+        // Test all buttons 1-89
+        for (int buttonNum = 1; buttonNum <= 89; buttonNum++) {
+            if (buttonNum % 10 == 0) {
+                Log.d(TAG, "Button" + buttonNum + ": SKIPPED (every 10th button)");
+                continue;
+            }
+
+            try {
+                int resID = context.getResources().getIdentifier("button" + buttonNum, "id", context.getPackageName());
+                if (resID != 0) {
+                    Button button = ((Activity)context).findViewById(resID);
+                    if (button != null) {
+                        int[] coords = getGridCoordinatesFromButton(button);
+                        if (coords != null) {
+                            String text = button.getText().toString();
+                            int row = coords[0];
+                            int col = coords[1];
+
+                            buttonGrid[row][col] = buttonNum;
+                            textGrid[row][col] = text.isEmpty() ? "empty" : text;
+                            validMappings++;
+
+                            Log.d(TAG, String.format("Button%d -> Grid[%d][%d] Text: '%s'",
+                                    buttonNum, row, col, text));
+                        } else {
+                            Log.w(TAG, "Button" + buttonNum + ": NO MAPPING");
+                        }
+                    } else {
+                        Log.w(TAG, "Button" + buttonNum + ": NOT FOUND IN LAYOUT");
+                    }
+                } else {
+                    Log.w(TAG, "Button" + buttonNum + ": NO RESOURCE ID");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error debugging button" + buttonNum, e);
+            }
+        }
+
+        Log.d(TAG, "Valid mappings found: " + validMappings + "/81");
+
+        // Display the grid with button numbers
+        Log.d(TAG, "=== BUTTON NUMBER GRID LAYOUT ===");
+        StringBuilder gridDisplay = new StringBuilder();
         for (int row = 0; row < 9; row++) {
             StringBuilder rowStr = new StringBuilder();
             for (int col = 0; col < 9; col++) {
-                int buttonNum = mapping[row][col];
-                rowStr.append(String.format("B%d ", buttonNum));
+                rowStr.append(String.format("%3d", buttonGrid[row][col]));
             }
-            Log.d(TAG, "Row " + row + ": " + rowStr.toString());
+            gridDisplay.append("Row ").append(row).append(": ").append(rowStr.toString()).append("\n");
         }
+        Log.d(TAG, gridDisplay.toString());
 
-        // Check last 3x3 specifically
-        Log.d(TAG, "=== LAST 3x3 BUTTONS ===");
-        for (int row = 6; row < 9; row++) {
+        // Display the grid with current text values
+        Log.d(TAG, "=== CURRENT TEXT VALUES GRID ===");
+        StringBuilder textDisplay = new StringBuilder();
+        for (int row = 0; row < 9; row++) {
             StringBuilder rowStr = new StringBuilder();
-            for (int col = 6; col < 9; col++) {
-                int buttonNum = mapping[row][col];
-                int resID = context.getResources().getIdentifier("button" + buttonNum, "id", context.getPackageName());
-                Button button = ((Activity)context).findViewById(resID);
-                String text = button != null ? button.getText().toString() : "NULL";
-                rowStr.append(String.format("B%d('%s') ", buttonNum, text));
+            for (int col = 0; col < 9; col++) {
+                String text = textGrid[row][col];
+                rowStr.append(String.format("%6s", text));
             }
-            Log.d(TAG, "Row " + row + ": " + rowStr.toString());
+            textDisplay.append("Row ").append(row).append(": ").append(rowStr.toString()).append("\n");
         }
+        Log.d(TAG, textDisplay.toString());
     }
 }

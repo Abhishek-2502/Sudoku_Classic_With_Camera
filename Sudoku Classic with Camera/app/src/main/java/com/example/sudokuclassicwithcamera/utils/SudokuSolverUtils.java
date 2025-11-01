@@ -16,7 +16,7 @@ public class SudokuSolverUtils {
     private static final String TAG = "SudokuSolver";
     private static Random random = new Random();
 
-    // Solve Sudoku with backtracking
+    // --Solve Sudoku with backtracking
     public static boolean solveSudoku(int grid[][], int row, int col) {
         if (grid == null) return false;
 
@@ -53,12 +53,12 @@ public class SudokuSolverUtils {
         return false;
     }
 
-    // Overloaded method for easier calling
+    // --Overloaded method for easier calling
     public static boolean solveSudoku(int[][] grid) {
         return grid != null && solveSudoku(grid, 0, 0);
     }
 
-    // Check if placing a number is safe
+    // --Check if placing a number is safe
     public static boolean isSafe(int[][] grid, int row, int col, int num) {
         if (grid == null) return false;
 
@@ -90,7 +90,7 @@ public class SudokuSolverUtils {
         return true;
     }
 
-    // Validate the input grid for conflicts
+    // --Validate the input grid for conflicts
     public static boolean validateInput(int[][] grid, Context context) {
         if (grid == null) {
             Toast.makeText(context, "Grid is null", Toast.LENGTH_SHORT).show();
@@ -113,7 +113,7 @@ public class SudokuSolverUtils {
         return true;
     }
 
-    // Validation that ignores the current cell
+    // --Validation that ignores the current cell
     private static boolean isSafeForValidation(int[][] grid, int row, int col, int num) {
         // Check row (ignore current position)
         for (int x = 0; x < 9; x++) {
@@ -145,7 +145,7 @@ public class SudokuSolverUtils {
         return true;
     }
 
-    // Generate random Sudoku puzzle
+    // --Generate random Sudoku puzzle
     public static int[][] generateRandomSudoku(String difficulty) {
         Log.d(TAG, "Generating " + difficulty + " Sudoku...");
 
@@ -169,7 +169,7 @@ public class SudokuSolverUtils {
         return puzzle;
     }
 
-    // Generate a complete solved Sudoku
+    // --Generate a complete solved Sudoku
     private static int[][] generateSolvedSudoku() {
         int[][] grid = new int[9][9];
 
@@ -196,14 +196,14 @@ public class SudokuSolverUtils {
         return null;
     }
 
-    // Fill the diagonal 3x3 boxes
+    // --Fill the diagonal 3x3 boxes
     private static void fillDiagonalBoxes(int[][] grid) {
         for (int box = 0; box < 3; box++) {
             fillBox(grid, box * 3, box * 3);
         }
     }
 
-    // Fill a 3x3 box with random numbers
+    // --Fill a 3x3 box with random numbers
     private static void fillBox(int[][] grid, int startRow, int startCol) {
         List<Integer> numbers = new ArrayList<>();
         for (int i = 1; i <= 9; i++) numbers.add(i);
@@ -217,7 +217,7 @@ public class SudokuSolverUtils {
         }
     }
 
-    // Remove numbers while ensuring unique solution
+    // --Remove numbers while ensuring unique solution
     private static void removeNumbersWithUniqueness(int[][] grid, String difficulty) {
         int cellsToRemove = getRemovalCount(difficulty);
         int removed = 0;
@@ -247,7 +247,7 @@ public class SudokuSolverUtils {
         Log.d(TAG, "Removed " + removed + " cells after " + attempts + " attempts");
     }
 
-    // Count number of solutions
+    // --Count number of solutions
     private static int countSolutions(int[][] grid, int row, int col) {
         if (row == 9) {
             return 1;
@@ -283,7 +283,7 @@ public class SudokuSolverUtils {
         }
     }
 
-    // Fallback default Sudoku
+    // --Fallback default Sudoku
     private static int[][] getDefaultSudoku() {
         return new int[][] {
                 {5, 3, 0, 0, 7, 0, 0, 0, 0},
